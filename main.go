@@ -1,7 +1,7 @@
 package main
 
 import (
-	"lcmies/go-tasker/types"
+	"github.com/lcmies/go-tasker/types"
 )
 
 var mgr *types.Mgr
