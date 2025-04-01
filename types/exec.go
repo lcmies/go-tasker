@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-type exec struct {
+type Exec struct {
 	name          string
 	status        Status
-	fn            func(io.Writer, *exec) error
-	fnWithContext func(context.Context, io.Writer, *exec) error
+	fn            func(io.Writer, *Exec) error
+	fnWithContext func(context.Context, io.Writer, *Exec) error
 	out           bytes.Buffer
 	err           error
 	ctx           context.Context
@@ -22,21 +22,21 @@ type exec struct {
 	TaskTotal int
 }
 
-func NewExec(name string, fn func(io.Writer, *exec) error) *exec {
+func NewExec(name string, fn func(io.Writer, *Exec) error) *Exec {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &exec{name, PENDING, fn, nil, bytes.Buffer{}, nil, ctx, cancel, 0, 0}
+	return &Exec{name, PENDING, fn, nil, bytes.Buffer{}, nil, ctx, cancel, 0, 0}
 }
 
-func NewExecWithContext(name string, fn func(context.Context, io.Writer, *exec) error) *exec {
+func NewExecWithContext(name string, fn func(context.Context, io.Writer, *Exec) error) *Exec {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &exec{name, PENDING, nil, fn, bytes.Buffer{}, nil, ctx, cancel, 0, 0}
+	return &Exec{name, PENDING, nil, fn, bytes.Buffer{}, nil, ctx, cancel, 0, 0}
 }
 
-func (e *exec) Description() string {
+func (e *Exec) Description() string {
 	return e.name
 }
 
-func (e *exec) Run() {
+func (e *Exec) Run() {
 	go func() {
 		finished := make(chan any)
 
@@ -74,22 +74,22 @@ func (e *exec) Run() {
 	}() // inner goroutine will be killed at this point
 }
 
-func (e *exec) Cancel() {
+func (e *Exec) Cancel() {
 	e.cancel()
 }
 
-func (e *exec) Status() Status {
+func (e *Exec) Status() Status {
 	return e.status
 }
 
-func (e *exec) Progress() (int, int) {
+func (e *Exec) Progress() (int, int) {
 	return e.TaskDone, e.TaskTotal
 }
 
-func (e *exec) Log() string {
+func (e *Exec) Log() string {
 	return e.out.String()
 }
 
-func (e *exec) Err() error {
+func (e *Exec) Err() error {
 	return e.err
 }
