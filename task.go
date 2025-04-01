@@ -1,4 +1,4 @@
-package main
+package tasker
 
 import (
 	"github.com/lcmies/go-tasker/types"
